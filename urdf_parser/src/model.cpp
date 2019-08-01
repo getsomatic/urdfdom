@@ -119,6 +119,17 @@ ModelInterfaceSharedPtr  parseURDF(const std::string &xml_string)
   }
   model->name_ = std::string(name);
 
+    // Get robot type
+    const char *objectType = robot_xml->Attribute("type");
+    if (!objectType)
+    {
+        CONSOLE_BRIDGE_logError("No type given for the robot.");
+        model.reset();
+        return model;
+    }
+
+    model->objectType_ = std::string(objectType);
+
   // Get all Material elements
   for (TiXmlElement* material_xml = robot_xml->FirstChildElement("material"); material_xml; material_xml = material_xml->NextSiblingElement("material"))
   {
@@ -261,6 +272,7 @@ TiXmlDocument*  exportURDF(const ModelInterface &model)
 
   TiXmlElement *robot = new TiXmlElement("robot");
   robot->SetAttribute("name", model.name_);
+  robot->SetAttribute("type", model.objectType_);
   doc->LinkEndChild(robot);
 
 
